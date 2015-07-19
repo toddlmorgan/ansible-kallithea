@@ -12,6 +12,13 @@ Minimum Ansible Version: 1.8
     - Precise   (12.04)
     - Trusty    (14.04)
 
+---
+The following examples assume that:
+- the content of the example is saved into a file called playbook.yml
+- in order to run the the playbook in a stand-alone fashion the file should be saved one level up from the repository
+---
+
+
 ## Example (Playbook)
 
 Standard installation (SQLite database):
@@ -73,6 +80,13 @@ the `kallithea_db_init` option:
 ```sh
 ansible-playbook playbook.yml -i inventory -e "kallithea_db_init=True"
 ```
+When run on an ubuntu style operating system the command needs to be run using SUDO
+
+```sh
+ansible-playbook playbook.yml -s -i inventory -e "kallithea_db_init=True"
+```
+
+
 
 ## Variables
 

@@ -4,6 +4,8 @@
   apt: pkg={{ item }}
         state=installed
   with_items:
+    - postgresql
+    - postgresql-client
     - postgresql-server-dev-all
     - python-psycopg2
 
