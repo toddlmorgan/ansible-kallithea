@@ -1,6 +1,6 @@
 ---
 
-- name: PostgreSQL - Install required tools
+- name: PostgreSQL - Install required tools - Debian
   apt: pkg={{ item }}
         state=installed
   with_items:
@@ -8,6 +8,18 @@
     - postgresql-client
     - postgresql-server-dev-all
     - python-psycopg2
+  when: ansible_os_family=='Debian'
+
+- name: PostgreSQL - Install required tools - Redhat
+  yum: name={{item}} state=installed
+  with_items:
+    - postgresql-server
+    - postgresql
+    - postgresql-libs
+    - postgresql-contrib    
+    - postgresql-devel
+    - python-psycopg2
+  when: ansible_os_family=='RedHat'
 
 - name: virtualenv - Install psycopg2
   sudo_user: "{{ kallithea_user }}"
@@ -15,6 +27,12 @@
         virtualenv={{ kallithea_venv }}
   with_items:
     - psycopg2
+
+- name: Start PostgreSQL and enable at boot
+  service: name=postgresql
+              enabled=yes
+              state=started
+
 
 - name: Remote PostgreSQL - Add user
   delegate_to: "{{ kallithea_db_host }}"

@@ -1,10 +1,29 @@
 ---
 
-- name: Install required tools
+- name: Install required tools - Debian
   apt:  pkg={{ item }}
         state=installed
         update_cache=yes
   with_items: kallithea_required_tools
+  when: ansible_os_family=='Debian'
+  tags:
+    - kallithea_install_required_tools
+
+- name: Install RedHat EPEL Repository
+  yum: name=epel-release state=installed
+  when: ansible_os_family=='RedHat'
+  tags:
+    - kallithea_install_required_tools
+
+- name: Install required tools - RedHat
+  yum: name={{item}} state=installed
+  with_items: 
+    - python-virtualenv
+    - python-pip
+    - '"@Development tools"'    
+    - python-devel
+    - sudo
+  when: ansible_os_family=='RedHat'
   tags:
     - kallithea_install_required_tools
 
@@ -13,6 +32,19 @@
         system=yes
   tags:
     - kallithea_install_user
+
+- name: Update Pip - RedHat
+  sudo_user: "{{ kallithea_user }}"
+  pip: name=setuptools state=latest
+       virtualenv={{ kallithea_venv }}
+  when: ansible_os_family=='RedHat'
+  tags:
+    - kallithea_install_required_tools
+
+
+- name: Fix Venv ownership - RedHat
+  file: path=/home/kallithea/venv owner={{ kallithea_user}}
+  when: ansible_os_family=='RedHat'   
 
 - name: Create repositories directory
   file: path={{ kallithea_repodir }} state=directory
